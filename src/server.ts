@@ -19,7 +19,7 @@ export class Server extends ServerConfig {
 
     this.app.use(
       cors({
-        origin: 'https://react-frontend-demo.vercel.app',
+        origin: this.getEnvVar('FRONTEND_REDIRECT_URI'),
       })
     );
     this.app.use(express.json());
