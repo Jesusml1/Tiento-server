@@ -34,6 +34,7 @@ export abstract class ConstraintsConfigurator extends ServerConfig {
     };
     return roles;
   }
+
   setChannels() {
     const channels = {
       tryout: this.getEnvVar('TRYOUT_CHANNEL'),
