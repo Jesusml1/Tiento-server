@@ -3,20 +3,24 @@ import querystring from 'querystring';
 
 import { ServerConfig } from '../config/server-config';
 import { EmailTransporter } from '../helpers/Email-transporter';
-// import { Token } from '../models/token-model';
+
 import { TokenHandler } from '../middleware/token-handler';
 import { NextFunction } from 'express';
+import { OauthRepository } from '../repositories/auth/Oauth-repository';
+import { CustomError, HttpCodes } from '../exceptions/custom-error';
 
 export class AuthServices extends ServerConfig {
   protected discordClientId: string;
   protected discordClientSecret: string;
   protected redirectUri: string;
+  private readonly httpRepository: OauthRepository;
 
   constructor() {
     super();
     this.discordClientId = this.getEnvVar('DISCORD_CLIENT_ID');
     this.discordClientSecret = this.getEnvVar('DISCORD_TOKEN');
     this.redirectUri = this.getEnvVar('FRONTEND_REDIRECT_URI');
+    this.httpRepository = new OauthRepository();
   }
 
   // Creo que esto seria mas una utilidad
@@ -42,24 +46,22 @@ export class AuthServices extends ServerConfig {
       scope: 'identify email',
     };
 
-    const response = await axios.post('https://discord.com/api/oauth2/token', querystring.stringify(data), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
-
-    return response.data.access_token;
+    const access_token = await this.httpRepository.getToken(data);
+    return access_token;
   }
 
-  async getDiscordUser(accessToken: any) {
-    const response = await axios.get('https://discord.com/api/users/@me', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    return response.data;
+  async getDiscordUser(accessToken: string) {
+    if (!accessToken) {
+      throw new CustomError({
+        description: 'There is not access token',
+        httpCode: HttpCodes.UNAUTHORIZED,
+      });
+    }
+    return await this.httpRepository.getUser(accessToken);
   }
 
-  async checkBan(id: string) {
+  async checkBan(user: any) {
+    const { id } = user;
     let status;
     return await axios
       .get(`https://discord.com/api/v9/guilds/1086689618197483540/bans/${id}`, {

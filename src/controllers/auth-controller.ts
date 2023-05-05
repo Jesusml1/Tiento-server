@@ -26,20 +26,18 @@ export class AuthController {
 
     try {
       const accessToken = await this.service.getDiscordToken(code);
-      const user = await this.service.getDiscordUser(accessToken);
-
-      const { id } = user;
+      const user: any = await this.service.getDiscordUser(accessToken);
 
       const redirectUri = this.service.getRedirectUri();
 
-      const ban = await this.service.checkBan(id);
+      const ban = await this.service.checkBan(user);
 
       if (ban) {
         res.redirect(redirectUri + '/banned');
         return;
       }
 
-      const query = await this.service.findUserById(id);
+      const query = await this.service.findUserById(user.id);
 
       // TODO: mover esta funcion de token al tokenHandler
       const token = jwt.sign({ data: accessToken }, 'mySecret', { expiresIn: '5m' });
@@ -49,8 +47,9 @@ export class AuthController {
       } else {
         res.redirect(redirectUri + `/verify-email?t=${token}`);
       }
-    } catch (error) {
-      res.status(500).json({ error });
+    } catch (error: any) {
+      console.log('=== ERROR ===');
+      res.status(error.httpCode).json({ message: error.message });
     }
   }
 

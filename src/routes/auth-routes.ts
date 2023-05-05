@@ -3,6 +3,7 @@ import { TokenHandler } from '../middleware/token-handler';
 import { AuthController } from '../controllers/auth-controller';
 import { verifyEmailValidator } from '../validators';
 import { VerifyValidator } from '../validators/verify-email-validator';
+import { DiscordCallbackValidator } from '../validators/discord-callback-validator';
 
 export class AuthRouter {
   protected router: Router;
@@ -20,7 +21,11 @@ export class AuthRouter {
 
   private initRoutes(): void {
     this.router.get('/discord', (req, res) => this.controller.discord(req, res));
-    this.router.get('/discord/callback', (req, res) => this.controller.discordCallback(req, res));
+    this.router.get(
+      '/discord/callback',
+      (req, res, next) => DiscordCallbackValidator(req, res, next),
+      (req, res) => this.controller.discordCallback(req, res)
+    );
     this.router.get('/user', (req, res) => this.controller.user(req, res));
 
     this.router.post(
