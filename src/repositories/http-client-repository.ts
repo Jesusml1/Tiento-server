@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { ServerConfig } from '../config/server-config';
-import { Error } from '../models/error-model';
 import { CustomError } from '../exceptions/custom-error';
 
 export abstract class HttpRepository<T> extends ServerConfig {
