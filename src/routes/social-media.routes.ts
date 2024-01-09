@@ -7,7 +7,7 @@ import { verifyAuth } from '../middleware/authorizer';
 
 @injectable()
 export class SocialMediaRouter {
-  public readonly controller: ISocialMediaController;
+  public readonly controller: SocialMediaController;
   private readonly router: Router;
 
   constructor(@inject(TYPES.Social_Media.controller) _controller: SocialMediaController) {

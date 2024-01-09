@@ -9,7 +9,7 @@ import { HttpStatusCode } from 'axios';
 
 @injectable()
 export class SocialMediaController extends BaseController {
-  public readonly service: ISocialMediaService;
+  public readonly service: SocialMediaService;
 
   constructor(@inject(TYPES.Social_Media.service) _service: SocialMediaService) {
     super();

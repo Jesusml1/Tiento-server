@@ -3,6 +3,8 @@ import { SupabaseClient } from '@supabase/supabase-js';
 import type { AxiosInstance, AxiosResponse } from 'axios';
 import { TYPES, buckets } from '../shared/constants';
 import { discordChannelsId } from '../shared/constants/discord';
+import axios, { HttpStatusCode } from 'axios';
+import { HttpException } from '../exceptions/custom-error';
 
 @injectable()
 export class SocialMediaRepository {
@@ -17,10 +19,14 @@ export class SocialMediaRepository {
     this.client = _axios;
   }
 
-  public async getInstagramPhoto(token: string): Promise<AxiosResponse> {
-    console.log('token is: ', token);
-    const fields = 'media_url,caption';
-    return this.client.get(`graph.instagram.com/me/media?fields=${fields}&access_token=${token}`);
+  public async getInstagramPhoto(token: string) {
+    try {
+      const fields = 'media_url,caption';
+
+      return axios.get(`https://graph.instagram.com/me/media?fields=${fields}&access_token=${token}`);
+    } catch (error) {
+      throw new HttpException({ code: HttpStatusCode.ServiceUnavailable, context: { error } });
+    }
   }
 
   public async getDiscordNews(limit: number = 2): Promise<any[]> {

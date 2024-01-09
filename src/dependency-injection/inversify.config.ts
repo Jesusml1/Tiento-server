@@ -41,7 +41,7 @@ container.bind(TYPES.Social_Media.service).to(SocialMediaService);
 
 // setup repositories
 container.bind<UserRepository>(TYPES.UserRepository).to(UserRepository);
-container.bind<ISocialMediaRepository>(TYPES.Social_Media.repository).to(SocialMediaRepository);
+container.bind<SocialMediaRepository>(TYPES.Social_Media.repository).to(SocialMediaRepository);
 
 // setup routers
 container.bind<IRouter>(TYPES.Router).to(MainRouter);

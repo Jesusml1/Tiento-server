@@ -3,7 +3,7 @@ export interface DiscordMessage {
   content: string;
   channel_id: string;
   author: Author;
-  attachments: [];
+  attachments: Attachments[];
   mentions: [];
   timestamp: string;
   edited_timestamp: boolean;
@@ -19,4 +19,10 @@ interface Author {
   avatar: null;
   public_flags: number;
   avatar_decoration: null;
+}
+
+interface Attachments {
+  url: string;
+  width: number;
+  height: number;
 }
