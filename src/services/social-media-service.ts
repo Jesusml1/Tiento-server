@@ -30,7 +30,7 @@ export class SocialMediaService {
   }
 
   // I'm not sure if I should to adapt message date to current user local date. Can be do on future phases
-  public async getDiscordNews(limit: number): Promise<CommunityMessage[]> {
+  public async getDiscordNews(limit: number) {
     try {
       // fetch messages from discord servers
       const rawMessages = <PromiseAllResult<AxiosResponse>[]>await this.repository.getDiscordNews(limit);
@@ -45,14 +45,12 @@ export class SocialMediaService {
           return {
             author: msg.author.username,
             content: cutDiscordPost(msg.content),
-            date: new Date(msg.timestamp).toLocaleDateString('en-US'),
+            date: new Date(msg.timestamp),
             channel_name: getGuildName(msg.channel_id),
             attachment: msg.attachments,
           };
         })
-        .sort((a: any, b: any) => {
-          return Number(new Date(a.timestamp)) - Number(new Date(b.timestamp));
-        });
+        .sort((a: any, b: any) => a.date - b.date);
     } catch (error) {
       throw new HttpException({
         message: discordErrors.CANNOT_RECOVER_MESSAGES,
