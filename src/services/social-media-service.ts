@@ -40,15 +40,19 @@ export class SocialMediaService {
         .map((item) => <DiscordMessage>item.value?.data)
         .flat();
       // return only the information of interest
-      return messages.map((msg) => {
-        return {
-          author: msg.author.username,
-          content: cutDiscordPost(msg.content),
-          date: new Date(msg.timestamp).toLocaleDateString('en-US'),
-          channel_name: getGuildName(msg.channel_id),
-          attachment: msg.attachments,
-        };
-      });
+      return messages
+        .map((msg) => {
+          return {
+            author: msg.author.username,
+            content: cutDiscordPost(msg.content),
+            date: new Date(msg.timestamp).toLocaleDateString('en-US'),
+            channel_name: getGuildName(msg.channel_id),
+            attachment: msg.attachments,
+          };
+        })
+        .sort((a: any, b: any) => {
+          return Number(new Date(a.timestamp)) - Number(new Date(b.timestamp));
+        });
     } catch (error) {
       throw new HttpException({
         message: discordErrors.CANNOT_RECOVER_MESSAGES,
